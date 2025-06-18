@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Maps</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .map-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: 600px;
+        }
+        .map-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        .map-display {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .mock-map {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #e8f5e8 25%, #f0f8f0 25%, #f0f8f0 50%, #e8f5e8 50%, #e8f5e8 75%, #f0f8f0 75%);
+            background-size: 40px 40px;
+            position: relative;
+        }
+        .map-legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .filter-group {
+            margin-bottom: 20px;
+        }
+        .filter-group h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.1em;
+        }
+        .filter-option {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        .filter-option input {
+            margin-right: 8px;
+        }
+        .map-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .marker-shelter { background: #28a745; top: 30%; left: 25%; }
+        .marker-hospital { background: #dc3545; top: 45%; left: 60%; }
+        .marker-food { background: #fd7e14; top: 60%; left: 40%; }
+        .marker-hazard { background: #6f42c1; top: 35%; left: 75%; }
+        .marker-evacuation { background: #20c997; top: 70%; left: 20%; }
+        .marker-resource { background: #ffc107; top: 25%; left: 50%; }
+        
+        .flood-zone {
+            position: absolute;
+            background: rgba(54, 162, 235, 0.3);
+            border: 2px dashed #36a2eb;
+            border-radius: 50%;
+        }
+        .flood-zone-1 { width: 120px; height: 80px; top: 40%; left: 65%; }
+        .flood-zone-2 { width: 100px; height: 100px; top: 55%; left: 15%; }
+        
+        .evacuation-route {
+            position: absolute;
+            height: 4px;
+            background: #20c997;
+            box-shadow: 0 0 0 2px rgba(32, 201, 151, 0.3);
+        }
+        .route-1 { width: 200px; top: 50%; left: 10%; transform: rotate(45deg); }
+        .route-2 { width: 150px; top: 30%; left: 70%; transform: rotate(-30deg); }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .map-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .map-display {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
+        
+        <div class="header">
+            <h1>🗺️ Interactive Emergency Maps</h1>
+            <p>Live disaster mapping with affected areas, safe zones, and resource locations</p>
+        </div>
+
+        <div class="map-container">
+            <div class="map-controls">
+                <div class="filter-group">
+                    <h3>🏥 Emergency Services</h3>
+                    <div class="filter-option">
+                        <input type="checkbox" id="hospitals" checked>
+                        <label for="hospitals">Hospitals & Clinics</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="shelters" checked>
+                        <label for="shelters">Emergency Shelters</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="evacuation" checked>
+                        <label for="evacuation">Evacuation Routes</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>📍 Resources</h3>
+                    <div class="filter-option">
+                        <input type="checkbox" id="food" checked>
+                        <label for="food">Food Distribution</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="supplies" checked>
+                        <label for="supplies">Supply Centers</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="fuel" checked>
+                        <label for="fuel">Fuel Stations</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>⚠️ Hazard Areas</h3>
+                    <div class="filter-option">
+                        <input type="checkbox" id="flooding" checked>
+                        <label for="flooding">Flood Zones</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="closures" checked>
+                        <label for="closures">Road Closures</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="hazards" checked>
+                        <label for="hazards">Other Hazards</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>🕒 Time Filter</h3>
+                    <div class="filter-option">
+                        <input type="radio" name="time" id="realtime" checked>
+                        <label for="realtime">Real-time</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="time" id="forecast">
+                        <label for="forecast">24hr Forecast</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-display">
+                <div class="mock-map">
+                    <!-- Flood zones -->
+                    <div class="flood-zone flood-zone-1"></div>
+                    <div class="flood-zone flood-zone-2"></div>
+                    
+                    <!-- Evacuation routes -->
+                    <div class="evacuation-route route-1"></div>
+                    <div class="evacuation-route route-2"></div>
+                    
+                    <!-- Map markers -->
+                    <div class="map-marker marker-shelter" title="Community Center Shelter"></div>
+                    <div class="map-marker marker-hospital" title="City General Hospital"></div>
+                    <div class="map-marker marker-food" title="Food Distribution Point"></div>
+                    <div class="map-marker marker-hazard" title="Downed Power Lines"></div>
+                    <div class="map-marker marker-evacuation" title="Evacuation Assembly Point"></div>
+                    <div class="map-marker marker-resource" title="Emergency Supply Center"></div>
+                </div>
+
+                <div class="map-legend">
+                    <h4 style="margin: 0 0 10px 0;">Map Legend</h4>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #28a745;"></div>
+                        <span>Shelters</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dc3545;"></div>
+                        <span>Hospitals</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fd7e14;"></div>
+                        <span>Food Centers</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #6f42c1;"></div>
+                        <span>Hazards</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #20c997;"></div>
+                        <span>Safe Zones</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffc107;"></div>
+                        <span>Resources</span>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <strong>Current Status:</strong> 2 flood zones active, 3 evacuation routes open, 6 shelters available. 
+                    Click on map markers for detailed information. Last updated: 5 minutes ago.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple interactivity for the map
+        document.querySelectorAll('.map-marker').forEach(marker => {
+            marker.addEventListener('click', function() {
+                const title = this.getAttribute('title');
+                const infoPanel = document.querySelector('.info-panel');
+                infoPanel.innerHTML = `<strong>Selected:</strong> ${title}. Status: Operational. Distance: 2.3 km. <button onclick="getDirections('${title}')">Get Directions</button>`;
+            });
+        });
+
+        function getDirections(location) {
+            alert(`Navigation to ${location} would open in your preferred maps application.`);
+        }
+
+        // Filter functionality
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // In a real application, this would filter the map layers
+                console.log(`Filter ${this.id} is now ${this.checked ? 'enabled' : 'disabled'}`);
+            });
+        });
+    </script>
+</body>
+</html>

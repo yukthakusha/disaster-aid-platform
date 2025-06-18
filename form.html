@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Request Emergency Help</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f7f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #222;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #444;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #ff4d4f;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #e04345;
+    }
+
+    .message {
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Request Emergency Help</h2>
+    <form id="requestForm">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" required placeholder="Enter your full name">
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}" placeholder="10-digit mobile number">
+
+      <label for="location">Current Location</label>
+      <input type="text" id="location" name="location" required placeholder="Where are you currently?">
+
+      <label for="resource_type">Type of Resource Needed</label>
+      <select id="resource_type" name="resource_type" required>
+        <option value="" disabled selected>Select one</option>
+        <option value="Food">Food</option>
+        <option value="Water">Water</option>
+        <option value="Shelter">Shelter</option>
+        <option value="Medical">Medical</option>
+        <option value="Clothing">Clothing</option>
+      </select>
+
+      <!-- Just for UI - Not sent to server -->
+      <label for="photo">Upload Geotagged Photo (UI only)</label>
+      <input type="file" id="photo" name="photo" accept="image/*">
+
+      <button type="submit">Submit Request</button>
+    </form>
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('requestForm');
+    const messageBox = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value.trim(),
+        phone: form.phone.value.trim(),
+        location: form.location.value.trim(),
+        resource_type: form.resource_type.value
+      };
+
+      try {
+        const res = await fetch('/api/requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          messageBox.textContent = "✅ Request submitted successfully!";
+          messageBox.className = "message success";
+          form.reset();
+        } else {
+          messageBox.textContent = "❌ " + result.error;
+          messageBox.className = "message error";
+        }
+      } catch (err) {
+        console.error("Submit error:", err);
+        messageBox.textContent = "❌ Something went wrong. Try again.";
+        messageBox.className = "message error";
+      }
+    });
+  </script>
+</body>
+</html>

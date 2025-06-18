@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Tracking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .back-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .resource-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .resource-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .resource-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 0;
+        }
+        .availability {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .high { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .low { background: #f8d7da; color: #721c24; }
+        .critical { background: #f5c6cb; color: #721c24; animation: pulse 2s infinite; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .resource-details {
+            margin-top: 15px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .progress-high { background: #28a745; }
+        .progress-medium { background: #ffc107; }
+        .progress-low { background: #dc3545; }
+        
+        .last-updated {
+            color: #666;
+            font-size: 0.8em;
+            text-align: right;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Dashboard</a>
+    
+    <div class="header">
+        <h1>📊 Resource Tracking</h1>
+        <p>Real-time monitoring of available supplies, facilities, and emergency equipment</p>
+    </div>
+
+    <div class="resources-grid">
+        <div class="resource-card">
+            <div class="resource-header">
+                <h3 class="resource-title">🏥 Medical Facilities</h3>
+                <span class="availability medium">Moderate Load</span>
+            </div>
+            <div class="resource-details">
+                <div class="detail-row">
+                    <span>City General Hospital</span>
+                    <span>🟡 75% Capacity</span>
+                </div>
+                <div class="detail-row">
+                    <span>Riverside Clinic</span>
+                    <span>🟢 40% Capacity</span>
+                </div>
+                <div class="detail-row">
+                    <span>Emergency Med Center</span>
+                    <span>🔴 95% Capacity</span>
+                </div>
+                <div class="detail-row">
+                    <span>Available Ambulances</span>
+                    <span>6 of 12</span>
+                </div>
+            </div>
+            <div class="last-updated">Last updated: 15 minutes ago</div>
+        </div>
+
+        <div class="resource-card">
+            <div class="resource-header">
+                <h3 class="resource-title">🏠 Emergency Shelters</h3>
+                <span class="availability high">Available</span>
+            </div>
+            <div class="resource-details">
+                <div class="detail-row">
+                    <span>Community Center</span>
+                    <span>45 of 100 beds</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-medium" style="width: 45%"></div>
+                </div>
+                <div class="detail-row">
+                    <span>School Gymnasium</span>
+                    <span>12 of 75 beds</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-high" style="width: 16%"></div>
+                </div>
+                <div class="detail-row">
+                    <span>Church Hall</span>
+                    <span>8 of 30 beds</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-medium" style="width: 27%"></div>
+                </div>
+            </div>
+            <div class="last-updated">Last updated: 5 minutes ago</div>
+        </div>
+
+        <div class="resource-card">
+            <div class="resource-header">
+                <h3 class="resource-title">🍲 Food & Water</h3>
+                <span class="availability low">Low Stock</span>
+            </div>
+            <div class="resource-details">
+                <div class="detail-row">
+                    <span>Bottled Water</span>
+                    <span>2,400 bottles</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-low" style="width: 25%"></div>
+                </div>
+                <div class="detail-row">
+                    <span>Ready Meals (MREs)</span>
+                    <span>850 units</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-medium" style="width: 40%"></div>
+                </div>
+                <div class="detail-row">
+                    <span>Emergency Food Pantry</span>
+                    <span>3 days supply</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-low" style="width: 30%"></div>
+                </div>
+            </div>
+            <div class="last-updated">Last updated: 8 minutes ago</div>
+        </div>
+
+        <div class="resource-card">
+            <div class="resource-header">
+                <h3 class="resource-title">🚨 Emergency Equipment</h3>
+                <span class="availability high">Operational</span>
+            </div>
+            <div class="resource-details">
+                <div class="detail-row">
+                    <span>Fire Trucks</span>
+                    <span>8 of 10 available</span>
+                </div>
+                <div class="detail-row">
+                    <span>Rescue Boats</span>
+                    <span>4 of 4 ready</span>
+                </div>
+                <div class="detail-row">
+                    <span>Generators</span>
+                    <span>15 of 20 deployed</span>
+                </div>
+                <div class="detail-row">
+                    <span>Communication Systems</span>
+                    <span>🟢 All Online</span>
+                </div>
+            </div>
+            <div class="last-updated">Last updated: 3 minutes ago</div>
+        </div>
+
+        <div class="resource-card">
+            <div class="resource-header">
+                <h3 class="resource-title">⚡ Utilities</h3>
+                <span class="availability critical">Critical</span>
+            </div>
+            <div class="resource-details">
+                <div class="detail-row">
+                    <span>Power Grid Status</span>
+                    <span>🔴 65% Operational</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-medium" style="width: 65%"></div>
+                </div>
+                <div class="detail-row">
+                    <span>Water Treatment</span>
+                    <span>🟡 Limited Capacity</span>
+                </div>
+                <div class="detail-row">
+                    <span>Cell Towers</span>
+                    <span>🟢 95% Operational</span>
+                </div>
+                <div class="detail-row">
+                    <span>Internet Backbone</span>
+                    <span>🟢 Stable</span>
+                </div>
+            </div>
+            <div class="last-updated">Last updated: 2 minutes ago</div>
+        </div>
+
+        <div class="resource-card">
+            <div class="resource-header">
+                <h3 class="resource-title">🚗 Transportation</h3>
+                <span class="availability medium">Partially Available</span>
+            </div>
+            <div class="resource-details">
+                <div class="detail-row">
+                    <span>Emergency Buses</span>
+                    <span>6 of 8 operational</span>
+                </div>
+                <div class="detail-row">
+                    <span>Road Closures</span>
+                    <span>12 active</span>
+                </div>
+                <div class="detail-row">
+                    <span>Evacuation Routes</span>
+                    <span>🟢 3 of 3 clear</span>
+                </div>
+                <div class="detail-row">
+                    <span>Fuel Stations Open</span>
+                    <span>18 of 25</span>
+                </div>
+            </div>
+            <div class="last-updated">Last updated: 12 minutes ago</div>
+        </div>
+    </div>
+</body>
+</html>
