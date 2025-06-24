@@ -701,34 +701,34 @@
         }, 2000);
     }
 
-    // Emergency reporting
-    function reportEmergency() {
-        const emergency = prompt('Describe the emergency situation:');
-        if (emergency) {
-            showLoading();
-            fetch("http://localhost:5000/api/alerts", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    title: "🚨 NEW REPORT",
-                    message: emergency
-                })
+  function reportEmergency() {
+    const emergency = prompt('Describe the emergency situation:');
+    if (emergency) {
+        showLoading();
+        fetch("https://disaster-aid-platform.onrender.com/api/alerts", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: "🚨 NEW REPORT",
+                message: emergency
             })
-            .then(res => res.json())
-            .then(data => {
-                setTimeout(() => {
-                    alert('Emergency reported successfully! Authorities have been notified.');
-                    addNewAlert(`${data.title}: ${data.message}`, 'just now', data.id);
-                }, 1500);
-            })
-            .catch(err => {
-                console.error("Error reporting emergency:", err);
-                alert("Failed to report emergency.");
-            });
-        }
+        })
+        .then(res => res.json())
+        .then(data => {
+            setTimeout(() => {
+                alert('Emergency reported successfully! Authorities have been notified.');
+                addNewAlert(`${data.title}: ${data.message}`, 'just now', data.id);
+            }, 1500);
+        })
+        .catch(err => {
+            console.error("Error reporting emergency:", err);
+            alert("Failed to report emergency.");
+        });
     }
+}
+
 
     // Add new alert to the alerts section
     function addNewAlert(message, time, id = null) {
