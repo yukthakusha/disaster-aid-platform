@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/connection'); // Should be pool.promise()
+const db = require('../db/connection'); // uses connection.js which exports the pool
 
 // POST /api/requests — Create a resource request
 router.post('/', async (req, res) => {
@@ -13,11 +13,15 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const [result] = await db.execute(
-      `INSERT INTO resources_requests(name, phone, location, resource_type) VALUES (?, ?, ?, ?)`,
+    const [result] = await db.promise().execute(
+      `INSERT INTO resources_requestss (name, phone, location, resource_type) VALUES (?, ?, ?, ?)`,
       [name, phone, location, resource_type]
     );
-    res.status(201).json({ message: "Resource request created successfully", id: result.insertId });
+
+    res.status(201).json({
+      message: "Resource request created successfully",
+      id: result.insertId
+    });
   } catch (err) {
     console.error("❌ Error inserting resource request:", err);
     res.status(500).json({ error: "Failed to insert resource request" });
@@ -27,7 +31,9 @@ router.post('/', async (req, res) => {
 // GET /api/requests — Fetch all requests
 router.get('/', async (req, res) => {
   try {
-    const [results] = await db.execute("SELECT * FROM resources_requests ORDER BY timestamp DESC");
+    const [results] = await db.promise().execute(
+      "SELECT * FROM resources_requestss ORDER BY timestamp DESC"
+    );
     res.json(results);
   } catch (err) {
     console.error("❌ Error fetching resource requests:", err);
@@ -41,7 +47,10 @@ router.put('/:id', async (req, res) => {
   const { status } = req.body;
 
   try {
-    await db.execute("UPDATE resources_requests SET status = ? WHERE id = ?", [status, id]);
+    await db.promise().execute(
+      "UPDATE resources_requestss SET status = ? WHERE id = ?",
+      [status, id]
+    );
     res.json({ message: "Status updated successfully" });
   } catch (err) {
     console.error("❌ Error updating request:", err);
