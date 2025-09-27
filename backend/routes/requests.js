@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/connection'); // uses connection.js which exports the pool
+const db = require('../db/connection'); // already a promise pool
 
 // POST /api/requests — Create a resource request
 router.post('/', async (req, res) => {
@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const [result] = await db.promise().execute(
+    const [result] = await db.query(
       `INSERT INTO resources_requestss (name, phone, location, resource_type) VALUES (?, ?, ?, ?)`,
       [name, phone, location, resource_type]
     );
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
 // GET /api/requests — Fetch all requests
 router.get('/', async (req, res) => {
   try {
-    const [results] = await db.promise().execute(
+    const [results] = await db.query(
       "SELECT * FROM resources_requestss ORDER BY timestamp DESC"
     );
     res.json(results);
@@ -47,7 +47,7 @@ router.put('/:id', async (req, res) => {
   const { status } = req.body;
 
   try {
-    await db.promise().execute(
+    await db.query(
       "UPDATE resources_requestss SET status = ? WHERE id = ?",
       [status, id]
     );

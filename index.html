@@ -705,7 +705,7 @@
     const emergency = prompt('Describe the emergency situation:');
     if (emergency) {
         showLoading();
-        fetch("https://disaster-aid-platform.onrender.com/api/alerts", {
+        fetch('https://disaster-aid-platform.onrender.com/api/alerts', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

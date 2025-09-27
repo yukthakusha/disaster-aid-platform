@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Chatbot</title>
+  <style>
+    body { font-family: Arial; padding: 2rem; }
+    #chat-box { max-width: 600px; margin: auto; }
+    textarea { width: 100%; padding: 10px; margin-bottom: 10px; }
+    button { padding: 10px 20px; cursor: pointer; }
+    .response { margin-top: 20px; background: #f0f0f0; padding: 10px; border-radius: 8px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div id="chat-box">
+    <h2>Ask Disaster Aid Bot</h2>
+    <textarea id="user-input" rows="4" placeholder="Type your question..."></textarea><br>
+    <button id="send-btn">Send</button>
+    <div id="bot-response" class="response"></div>
+  </div>
+
+  <script>
+    document.getElementById('send-btn').addEventListener('click', async () => {
+      const message = document.getElementById('user-input').value.trim();
+      const responseBox = document.getElementById('bot-response');
+
+      if (!message) {
+        responseBox.innerText = '❗ Please type a message.';
+        return;
+      }
+
+      responseBox.innerText = '⏳ Thinking...';
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message }),
+        });
+
+        if (!res.ok) throw new Error('Failed to contact server.');
+
+        const data = await res.json();
+        responseBox.innerText = '🤖 ' + (data.reply || 'No reply received.');
+      } catch (error) {
+        console.error('Error:', error);
+        responseBox.innerText = '❌ Error contacting the bot.';
+      }
+    });
+  </script>
+</body>
+</html>
